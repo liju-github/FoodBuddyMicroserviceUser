@@ -10,9 +10,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	userPb "github.com/liju-github/CentralisedFoodbuddyMicroserviceProto/User"
-	model "github.com/liju-github/EcommerceUserService/models"
-	"github.com/liju-github/EcommerceUserService/repository"
-	util "github.com/liju-github/EcommerceUserService/utils"
+	model "github.com/liju-github/FoodBuddyMicroserviceUser/models"
+	"github.com/liju-github/FoodBuddyMicroserviceUser/repository"
+	util "github.com/liju-github/FoodBuddyMicroserviceUser/utils"
 )
 
 const (
@@ -61,7 +61,7 @@ func (s *UserService) GetAllUsers(ctx context.Context, req *userPb.GetAllUsersRe
 	}, nil
 }
 
-func (s *UserService) Register(ctx context.Context, req *userPb.RegisterRequest) (*userPb.RegisterResponse, error) {
+func (s *UserService) UserSignup(ctx context.Context, req *userPb.UserSignupRequest) (*userPb.UserSignupResponse, error) {
 	existingUser, err := s.repo.GetUserByEmail(req.Email)
 	if err == nil && existingUser != nil {
 		return nil, model.ErrDuplicateEmail
@@ -80,7 +80,7 @@ func (s *UserService) Register(ctx context.Context, req *userPb.RegisterRequest)
 		ID:               fmt.Sprintf("usr_%d", time.Now().UnixNano()),
 		Email:            req.Email,
 		PasswordHash:     string(passwordHash),
-		Name:             req.Name,
+		Name:             req.FirstName,
 		PhoneNumber:      req.PhoneNumber,
 		Reputation:       0,
 		IsVerified:       false,
@@ -94,14 +94,14 @@ func (s *UserService) Register(ctx context.Context, req *userPb.RegisterRequest)
 	// Here you would typically send an email with the verification code
 	// sendVerificationEmail(user.Email, verificationCode)
 
-	return &userPb.RegisterResponse{
+	return &userPb.UserSignupResponse{
 		Success: true,
 		Message: "Registration successful. Please check your email for verification.",
 	}, nil
 }
 
 // Login verifies credentials and returns a token
-func (s *UserService) Login(ctx context.Context, req *userPb.LoginRequest) (*userPb.LoginResponse, error) {
+func (s *UserService) UserLogin(ctx context.Context, req *userPb.UserLoginRequest) (*userPb.UserLoginResponse, error) {
 	user, err := s.repo.GetUserByEmail(req.Email)
 	if err != nil {
 		return nil, model.ErrUserNotFound
@@ -112,9 +112,8 @@ func (s *UserService) Login(ctx context.Context, req *userPb.LoginRequest) (*use
 		return nil, model.ErrInvalidPassword
 	}
 
-	return &userPb.LoginResponse{
-		Success: true,
-		UserId:  user.ID,
+	return &userPb.UserLoginResponse{
+		UserId: user.ID,
 	}, nil
 }
 
@@ -203,7 +202,7 @@ func (s *UserService) UpdateProfile(ctx context.Context, req *userPb.UpdateProfi
 		user.Name = req.Name
 	}
 
-	if req.PhoneNumber != "" {
+	if req.PhoneNumber != 0 {
 		user.PhoneNumber = req.PhoneNumber
 	}
 

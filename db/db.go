@@ -5,19 +5,25 @@ import (
 	"log"
 	"time"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	"github.com/liju-github/EcommerceUserService/configs"
-	"github.com/liju-github/EcommerceUserService/models"
+	config "github.com/liju-github/FoodBuddyMicroserviceUser/configs"
+	model "github.com/liju-github/FoodBuddyMicroserviceUser/models"
 )
 
 // Connect establishes a connection to the SQLite database using GORM and configures connection pool settings.
 // Returns a GORM database instance or an error if the connection fails.
 func Connect(cfg config.Config) (*gorm.DB, error) {
-	dsn := "./db.sqlite3" // Database path; can be adjusted in the config if needed
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		cfg.DBUser,
+		cfg.DBPassword,
+		cfg.DBHost,
+		cfg.DBPort,
+		cfg.DBName,
+	)
 
-	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}

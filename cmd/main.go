@@ -4,12 +4,12 @@ import (
 	"log"
 	"net"
 
-	config "github.com/liju-github/EcommerceUserService/configs"
-	"github.com/liju-github/EcommerceUserService/db"
 	user "github.com/liju-github/CentralisedFoodbuddyMicroserviceProto/User"
-	"github.com/liju-github/EcommerceUserService/repository"
-	"github.com/liju-github/EcommerceUserService/service"
-	util "github.com/liju-github/EcommerceUserService/utils"
+	config "github.com/liju-github/FoodBuddyMicroserviceUser/configs"
+	"github.com/liju-github/FoodBuddyMicroserviceUser/db"
+	"github.com/liju-github/FoodBuddyMicroserviceUser/repository"
+	"github.com/liju-github/FoodBuddyMicroserviceUser/service"
+	util "github.com/liju-github/FoodBuddyMicroserviceUser/utils"
 	"google.golang.org/grpc"
 )
 
@@ -30,7 +30,7 @@ func main() {
 	userService := service.NewUserService(userRepo)
 
 	// Start gRPC server
-	listener, err := net.Listen("tcp", ":"+cfg.GRPCPort)
+	listener, err := net.Listen("tcp", ":"+cfg.USERGRPCPort)
 	if err != nil {
 		log.Fatalf("Failed to start listener: %v", err)
 	}
@@ -38,7 +38,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	user.RegisterUserServiceServer(grpcServer, userService)
 
-	log.Println("User Service is running on gRPC port: " + cfg.GRPCPort)
+	log.Println("User Service is running on gRPC port: " + cfg.USERGRPCPort)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("gRPC server startup failed: %v", err)
 	}

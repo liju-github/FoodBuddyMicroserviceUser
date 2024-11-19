@@ -13,7 +13,7 @@ type Config struct {
 	DBName       string
 	DBHost       string
 	DBPort       string
-	GRPCPort     string
+	USERGRPCPort string
 	JWTSecretKey string
 }
 
@@ -23,12 +23,12 @@ func LoadConfig() Config {
 	}
 
 	return Config{
-		DBUser:       os.Getenv("DB_USER"),
-		DBPassword:   os.Getenv("DB_PASSWORD"),
-		DBName:       os.Getenv("DB_NAME"),
-		DBHost:       os.Getenv("DB_HOST"),
-		DBPort:       os.Getenv("DB_PORT"),
-		GRPCPort:     os.Getenv("GRPC_PORT"),
-		JWTSecretKey: os.Getenv("JWT_SECRET"),
+		DBUser:       os.Getenv("DBUSER"),
+		DBPassword:   os.Getenv("DBPASSWORD"),
+		DBName:       os.Getenv("DBNAME"),
+		DBHost:       os.Getenv("DBHOST"),
+		DBPort:       os.Getenv("DBPORT"),
+		USERGRPCPort: os.Getenv("USERGRPCPORT"),
+		JWTSecretKey: os.Getenv("JWTSECRET"),
 	}
 }

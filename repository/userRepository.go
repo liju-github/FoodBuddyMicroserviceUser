@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	model "github.com/liju-github/EcommerceUserService/models"
+	model "github.com/liju-github/FoodBuddyMicroserviceUser/models"
 	"gorm.io/gorm"
 )
 

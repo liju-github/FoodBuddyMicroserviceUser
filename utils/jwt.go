@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	model "github.com/liju-github/EcommerceUserService/models"
+	model "github.com/liju-github/FoodBuddyMicroserviceUser/models"
 )
 
 // CustomClaims extends jwt.StandardClaims
@@ -27,8 +27,6 @@ var (
 func SetJWTSecretKey(secret string) {
 	JWTSecretKey = secret
 }
-
-
 
 // ValidateToken verifies the JWT token
 func ValidateToken(tokenString string) (*CustomClaims, error) {

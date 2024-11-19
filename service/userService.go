@@ -25,10 +25,10 @@ type UserService struct {
 }
 
 type CustomClaims struct {
-	UserID     string `json:"userId"`
-	Email      string `json:"email"`
-	Role       string `json:"role"`
-	Reputation int32  `json:"reputation"`
+	ID    string `json:"id"`
+	Email string `json:"email"`
+	Role  string `json:"role"`
+	exp   string `json:"exp"`
 	jwt.RegisteredClaims
 }
 
@@ -45,10 +45,10 @@ func (s *UserService) GetAllUsers(ctx context.Context, req *userPb.GetAllUsersRe
 	var userResponses []*userPb.GetProfileResponse
 	for _, user := range users {
 		userResponses = append(userResponses, &userPb.GetProfileResponse{
-			UserId:     user.ID,
-			Email:      user.Email,
-			Name:       user.Name,
-			Reputation: user.Reputation,
+			UserId:      user.ID,
+			Email:       user.Email,
+			Name:        user.Name,
+			Reputation:  user.Reputation,
 			PhoneNumber: user.PhoneNumber,
 			IsVerified:  user.IsVerified,
 			IsBanned:    user.IsBanned,
@@ -146,9 +146,9 @@ func (s *UserService) GetProfile(ctx context.Context, req *userPb.GetProfileRequ
 	}
 
 	return &userPb.GetProfileResponse{
-		UserId: user.ID,
-		Email:  user.Email,
-		Name:   user.Name,
+		UserId:      user.ID,
+		Email:       user.Email,
+		Name:        user.Name,
 		Reputation:  user.Reputation,
 		PhoneNumber: user.PhoneNumber,
 		IsVerified:  user.IsVerified,
@@ -173,10 +173,10 @@ func (s *UserService) GetUserByToken(ctx context.Context, req *userPb.GetUserByT
 		return nil, model.ErrUserNotVerified
 	}
 	response := &userPb.GetProfileResponse{
-		UserId:     user.ID,
-		Email:      user.Email,
-		Name:       user.Name,
-		Reputation: user.Reputation,
+		UserId:      user.ID,
+		Email:       user.Email,
+		Name:        user.Name,
+		Reputation:  user.Reputation,
 		PhoneNumber: user.PhoneNumber,
 		IsVerified:  user.IsVerified,
 		IsBanned:    false,
@@ -222,10 +222,10 @@ func (s *UserService) UpdateProfile(ctx context.Context, req *userPb.UpdateProfi
 		Success: true,
 		Message: "Profile updated successfullyyy",
 		Profile: &userPb.GetProfileResponse{
-			UserId:     user.ID,
-			Email:      user.Email,
-			Name:       user.Name,
-			Reputation: user.Reputation,
+			UserId:      user.ID,
+			Email:       user.Email,
+			Name:        user.Name,
+			Reputation:  user.Reputation,
 			PhoneNumber: user.PhoneNumber,
 			IsVerified:  user.IsVerified,
 			IsBanned:    user.IsBanned,

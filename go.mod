@@ -8,7 +8,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/joho/godotenv v1.5.1
-	github.com/liju-github/CentralisedFoodbuddyMicroserviceProto v0.0.0-20241119053239-6e1ab2a371ba
+	github.com/liju-github/CentralisedFoodbuddyMicroserviceProto v0.0.0-20241119134452-5c2de86bf177
 	golang.org/x/crypto v0.29.0
 	google.golang.org/grpc v1.68.0
 	gorm.io/driver/mysql v1.5.7

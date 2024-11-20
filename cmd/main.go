@@ -9,14 +9,12 @@ import (
 	"github.com/liju-github/FoodBuddyMicroserviceUser/db"
 	"github.com/liju-github/FoodBuddyMicroserviceUser/repository"
 	"github.com/liju-github/FoodBuddyMicroserviceUser/service"
-	util "github.com/liju-github/FoodBuddyMicroserviceUser/utils"
 	"google.golang.org/grpc"
 )
 
 func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
-	util.SetJWTSecretKey(cfg.JWTSecretKey)
 
 	// Initialize database connection
 	dbConn, err := db.Connect(cfg)

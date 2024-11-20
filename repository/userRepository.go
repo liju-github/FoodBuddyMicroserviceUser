@@ -159,12 +159,12 @@ func (r *userRepository) UpdateUserVerification(userID string, isVerified bool) 
 // GetUserProfile retrieves the user profile by userID
 func (r *userRepository) GetUserProfile(userID string) (*model.User, error) {
 	var user model.User
-	if err := r.db.Select("id, email, name, street_name, locality, state, pincode, phone_number, reputation, is_verified").
-		Where("id = ?", userID).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("user not found")
+	result := r.db.Model(&model.User{}).Where("id = ?", userID).First(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, model.ErrUserNotFound
 		}
-		return nil, fmt.Errorf("failed to get user profile: %w", err)
+		return nil, fmt.Errorf("failed to get user profile: %w", result.Error)
 	}
 	return &user, nil
 }
@@ -256,4 +256,3 @@ func (r *userRepository) UnBanUser(userID string) error {
 
 	return nil
 }
-

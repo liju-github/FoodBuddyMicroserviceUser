@@ -40,15 +40,15 @@ func Connect(cfg config.Config) (*gorm.DB, error) {
 	sqlDB.SetConnMaxIdleTime(5 * time.Minute)
 
 	// Auto-migrate database schema for all models
-	if err := db.AutoMigrate(&model.User{}); err != nil {
+	if err := db.AutoMigrate(&model.User{},&model.UserAddress{}); err != nil {
 		return nil, fmt.Errorf("auto-migration failed: %w", err)
 	}
 
-	log.Println("Connected to SQLite database and schema migrated")
+	log.Println("Connected to MySQL database and schema migrated")
 	return db, nil
 }
 
-// Close terminates the SQLite database connection safely.
+// Close terminates the MySQL database connection safely.
 func Close(db *gorm.DB) {
 	if db == nil {
 		log.Println("No active database connection to close.")

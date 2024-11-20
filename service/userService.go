@@ -6,13 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 
 	userPb "github.com/liju-github/CentralisedFoodbuddyMicroserviceProto/User"
 	model "github.com/liju-github/FoodBuddyMicroserviceUser/models"
 	"github.com/liju-github/FoodBuddyMicroserviceUser/repository"
-	util "github.com/liju-github/FoodBuddyMicroserviceUser/utils"
 )
 
 const (
@@ -22,14 +20,6 @@ const (
 type UserService struct {
 	userPb.UnimplementedUserServiceServer
 	repo repository.UserRepository
-}
-
-type CustomClaims struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
-	exp   string `json:"exp"`
-	jwt.RegisteredClaims
 }
 
 func NewUserService(repo repository.UserRepository) *UserService {
@@ -73,30 +63,24 @@ func (s *UserService) UserSignup(ctx context.Context, req *userPb.UserSignupRequ
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	// Generate verification code (you might want to use a more sophisticated method)
-	verificationCode := fmt.Sprintf("%06d", time.Now().UnixNano()%1000000)
-
 	user := model.User{
-		ID:               fmt.Sprintf("usr_%d", time.Now().UnixNano()),
-		Email:            req.Email,
-		PasswordHash:     string(passwordHash),
-		Name:             req.FirstName,
-		PhoneNumber:      req.PhoneNumber,
-		Reputation:       0,
-		IsVerified:       false,
-		VerificationCode: verificationCode,
+		ID:           fmt.Sprintf("usr_%d", time.Now().UnixNano()),
+		Email:        req.Email,
+		PasswordHash: string(passwordHash),
+		Name:         req.FirstName,
+		PhoneNumber:  req.PhoneNumber,
+		Reputation:   0,
+		IsVerified:   true,
 	}
 
 	if err := s.repo.CreateUser(&user); err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	// Here you would typically send an email with the verification code
-	// sendVerificationEmail(user.Email, verificationCode)
-
 	return &userPb.UserSignupResponse{
 		Success: true,
 		Message: "Registration successful. Please check your email for verification.",
+		UserId:  user.ID,
 	}, nil
 }
 
@@ -153,36 +137,6 @@ func (s *UserService) GetProfile(ctx context.Context, req *userPb.GetProfileRequ
 		PhoneNumber: user.PhoneNumber,
 		IsVerified:  user.IsVerified,
 	}, nil
-}
-
-// VerifyTokenMiddleware middleware for token verification
-func (s *UserService) GetUserByToken(ctx context.Context, req *userPb.GetUserByTokenRequest) (*userPb.GetProfileResponse, error) {
-	claims, err := util.ValidateToken(req.Token)
-	if err != nil {
-		return nil, model.ErrInvalidToken
-	}
-
-	user, err := s.repo.GetUserByID(claims.UserID)
-	if err != nil {
-		return nil, model.ErrUserNotFound
-	}
-
-	fmt.Println("user record is ", user)
-
-	if !user.IsVerified {
-		return nil, model.ErrUserNotVerified
-	}
-	response := &userPb.GetProfileResponse{
-		UserId:      user.ID,
-		Email:       user.Email,
-		Name:        user.Name,
-		Reputation:  user.Reputation,
-		PhoneNumber: user.PhoneNumber,
-		IsVerified:  user.IsVerified,
-		IsBanned:    false,
-	}
-
-	return response, nil
 }
 
 // UpdateProfile updates user profile information

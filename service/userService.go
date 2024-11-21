@@ -8,6 +8,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/google/uuid"
 	userPb "github.com/liju-github/CentralisedFoodbuddyMicroserviceProto/User"
 	model "github.com/liju-github/FoodBuddyMicroserviceUser/models"
 	"github.com/liju-github/FoodBuddyMicroserviceUser/repository"
@@ -64,7 +65,7 @@ func (s *UserService) UserSignup(ctx context.Context, req *userPb.UserSignupRequ
 	}
 
 	user := model.User{
-		ID:           fmt.Sprintf("usr_%d", time.Now().UnixNano()),
+		ID:           fmt.Sprintf("usr_%s", uuid.New().String()),
 		Email:        req.Email,
 		PasswordHash: string(passwordHash),
 		Name:         req.FirstName,
@@ -318,5 +319,38 @@ func (s *UserService) DeleteAddress(ctx context.Context, req *userPb.DeleteAddre
 	return &userPb.DeleteAddressResponse{
 		Success: true,
 		Message: "Address deleted successfully",
+	}, nil
+}
+
+func (s *UserService) ValidateUserAddress(ctx context.Context, req *userPb.ValidateUserAddressRequest) (*userPb.ValidateUserAddressResponse, error) {
+	// Get all addresses for the user
+	addresses, err := s.repo.GetAddresses(req.UserId)
+	if err != nil {
+		return &userPb.ValidateUserAddressResponse{
+			IsValid: false,
+			Message: "Failed to retrieve user addresses",
+		}, err
+	}
+
+	// Look for the specific address
+	for _, addr := range addresses {
+		if addr.ID == req.AddressId {
+			return &userPb.ValidateUserAddressResponse{
+				IsValid: true,
+				Message: "Address validated successfully",
+				Address: &userPb.Address{
+					AddressId:  addr.ID,
+					StreetName: addr.StreetName,
+					Locality:   addr.Locality,
+					State:      addr.State,
+					Pincode:    addr.Pincode,
+				},
+			}, nil
+		}
+	}
+
+	return &userPb.ValidateUserAddressResponse{
+		IsValid: false,
+		Message: "Address not found for this user",
 	}, nil
 }
